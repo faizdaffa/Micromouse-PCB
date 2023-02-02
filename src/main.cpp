@@ -1,7 +1,7 @@
 #include <Arduino.h>
 #include "motor.h"
 #include "encoder.h"
-//#include "compas.h"
+#include "compas.h"
 
 void setup()
 {
@@ -9,12 +9,22 @@ void setup()
   Serial.println("START");
   motor_innit();
   encoder_innit();
-  //mpu6050_innit();
+  mpu6050_innit();
 }
 
 void loop()
 {
-  //data_mpu6050();
-  maju();
-  read_encoder();
+  data_mpu6050();
+  if (z < -0.5)
+  {
+    putar_kiri();
+  }
+  else if (z > 0.5)
+  {
+    putar_kanan();
+  }
+  else
+  {
+    stop();
+  }
 }
