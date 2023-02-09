@@ -7,7 +7,7 @@
 #define M2B 8
 #define M2E 9
 
-int pwm = 100;
+int pwm = 50;
 
 void motor_innit()
 {
@@ -69,10 +69,14 @@ void stop()
     analogWrite(M2E, 0);
 }
 
-void tes_motor ()
+void tes_motor()
 {
-    maju(); delay(1000);
-    stop(); delay(1000);
-    mundur(); delay(1000);
-    stop(); delay(1000);
+    maju();
+    delay(1000);
+    stop();
+    delay(1000);
+    mundur();
+    delay(1000);
+    stop();
+    delay(1000);
 }

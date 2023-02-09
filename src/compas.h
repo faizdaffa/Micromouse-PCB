@@ -7,7 +7,7 @@
 
 MPU6050 mpu(Wire);
 unsigned long timer = 0;
-float z = 0;
+float z = 0.0;
 
 void mpu6050_innit()
 {
@@ -17,7 +17,7 @@ void mpu6050_innit()
   Serial.println(status);
   while (status != 0) { } // stop everything if could not connect to MPU6050
   Serial.println(F("Calculating offsets, do not move MPU6050"));
-  delay(3000);
+  delay(2000);
   mpu.calcOffsets(); // gyro and accelero
   Serial.println("Done!\n");
 }
