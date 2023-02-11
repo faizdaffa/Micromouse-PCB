@@ -33,7 +33,7 @@ void data_mpu6050()
     // Serial.print(mpu.getAngleY());
     z = mpu.getAngleZ();
     Serial.print(" Z : ");
-    Serial.println(z);
+    Serial.print(z);
     timer = millis();
   }
 }

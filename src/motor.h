@@ -71,12 +71,8 @@ void stop()
 
 void tes_motor()
 {
-    maju();
-    delay(1000);
-    stop();
-    delay(1000);
-    mundur();
-    delay(1000);
-    stop();
-    delay(1000);
+    maju();   delay(1000);
+    stop();   delay(1000);
+    mundur(); delay(1000);
+    stop();   delay(1000);
 }

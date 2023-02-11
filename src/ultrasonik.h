@@ -29,10 +29,10 @@ void read_ultrasonik()
     depan = sonar[1].ping_cm(); // Send ping, get ping time in microseconds (uS).
     kiri  = sonar[2].ping_cm(); // Send ping, get ping time in microseconds (uS).
 
-    Serial.print("Kanan: ");
-    Serial.print(kanan);
-    Serial.print("    Depan: ");
-    Serial.print(depan);
-    Serial.print("    Kiri: ");
-    Serial.println(kiri);
+    // Serial.print("Kanan: ");
+    // Serial.print(kanan);
+    // Serial.print("    Depan: ");
+    // Serial.print(depan);
+    // Serial.print("    Kiri: ");
+    // Serial.println(kiri);
 }
