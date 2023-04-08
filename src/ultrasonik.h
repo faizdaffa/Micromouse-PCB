@@ -1,12 +1,12 @@
 #include <Arduino.h>
 #include <NewPing.h>
 
-#define TRIGGER_1  2 // Kanan
-#define ECHO_1     3
-#define TRIGGER_2 10 // Depan
-#define ECHO_2    11
-#define TRIGGER_3 12 // Kiri
-#define ECHO_3    13
+#define TRIGGER_1  2 // Kiri
+#define ECHO_1     7
+#define TRIGGER_2  9 // Depan
+#define ECHO_2     8
+#define TRIGGER_3 11 // Kanan
+#define ECHO_3    10
 #define MAX      400
 #define SONAR_NUM  3
 
@@ -17,22 +17,22 @@ NewPing sonar[SONAR_NUM] = {
     NewPing(TRIGGER_3, ECHO_3, MAX)
 };
 
-int kanan = 0;
-int depan = 0;
 int kiri = 0;
+int depan = 0;
+int kanan = 0;
 
 void read_ultrasonik()
 {
     delay(50);
 
-    kanan = sonar[0].ping_cm(); // Send ping, get ping time in microseconds (uS).
+    kiri  = sonar[0].ping_cm(); // Send ping, get ping time in microseconds (uS).
     depan = sonar[1].ping_cm(); // Send ping, get ping time in microseconds (uS).
-    kiri  = sonar[2].ping_cm(); // Send ping, get ping time in microseconds (uS).
+    kanan = sonar[2].ping_cm(); // Send ping, get ping time in microseconds (uS).
 
-    // Serial.print("Kanan: ");
-    // Serial.print(kanan);
-    // Serial.print("    Depan: ");
-    // Serial.print(depan);
-    // Serial.print("    Kiri: ");
-    // Serial.println(kiri);
+    Serial.print("Kiri: ");
+    Serial.print(kiri);
+    Serial.print("    Depan: ");
+    Serial.print(depan);
+    Serial.print("    Kanan: ");
+    Serial.println(kanan);
 }

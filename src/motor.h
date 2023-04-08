@@ -1,13 +1,13 @@
 #include <Arduino.h>
 
-#define M1A 4
-#define M1B 5
-#define M1E 6
-#define M2A 7
-#define M2B 8
-#define M2E 9
+#define M1A 1
+#define M1B 0
+#define M1E 3
+#define M2A 6
+#define M2B 4
+#define M2E 5
 
-int pwm = 50;
+int pwm = 255;
 
 void motor_innit()
 {
