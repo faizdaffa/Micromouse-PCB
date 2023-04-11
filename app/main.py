@@ -340,7 +340,6 @@ class App(tk.Tk):
                     print(val)
                     self.df["gyroZ"].append(float(val[0]))
                     self.df["N"].append(self.count)
-                    print(self.df["N"])
                     self.plot()
                 else:
                     continue

@@ -1,28 +1,49 @@
-#include <Arduino.h>
-// #include "motor.h"
-#include "compas.h"
-#include "ultrasonik.h"
-#include "PID.h"
-#include "bluetooth.h"
+#include <Wire.h>
+#include <MPU6050.h>
 
-long previousMillis = 0;
+MPU6050 mpu;
+
+// Timers
+unsigned long timer = 0;
+float timeStep = 0.01;
+
+// Pitch, Roll and Yaw values
+float pitch = 0;
+float roll = 0;
+float yaw = 0;
 
 void setup()
 {
   Serial.begin(9600);
-  // Serial.println("START");
-  // mpu6050_innit();
-  // motor_innit();
-  bluetooth_innit();
+  q while (!mpu.begin(MPU6050_SCALE_2000DPS, MPU6050_RANGE_2G))
+  {
+    Serial.println("Could not find a valid MPU6050 sensor, check wiring!");
+    delay(500);
+  }
+  mpu.calibrateGyro();
+  mpu.setThreshold(3);
 }
 
 void loop()
 {
-  // if (millis() - previousMillis > 1000)
-  // {
-  //   sendToApp("1");
-  //   previousMillis = millis();
-  // }
+  timer = millis();
 
-  bluetooth.println("12");
+  // Read normalized values
+  Vector norm = mpu.readNormalizeGyro();
+
+  // Calculate Pitch, Roll and Yaw
+  pitch = pitch + norm.YAxis * timeStep;
+  roll = roll + norm.XAxis * timeStep;
+  yaw = yaw + norm.ZAxis * timeStep;
+
+  // Output raw
+  Serial.print(" Pitch = ");
+  Serial.print(pitch);
+  Serial.print(" Roll = ");
+  Serial.print(roll);
+  Serial.print(" Yaw = ");
+  Serial.println(yaw);
+
+  // Wait to full timeStep period
+  delay((timeStep * 1000) - (millis() - timer));
 }

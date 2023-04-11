@@ -2,38 +2,32 @@
     Angles are given in degrees
   License: MIT
 */
+#include <Arduino.h>
 #include "Wire.h"
-#include <MPU6050_light.h>
+#include <MPU6050.h>
 
-MPU6050 mpu(Wire);
+MPU6050 mpu;
+float timeStep = 0.01;
 unsigned long timer = 0;
-float z = 0.0;
 
 void mpu6050_innit()
 {
   Wire.begin();
-  byte status = mpu.begin();
-  Serial.print(F("MPU6050 status: "));
-  Serial.println(status);
-  while (status != 0) { } // stop everything if could not connect to MPU6050
-  Serial.println(F("Calculating offsets, do not move MPU6050"));
-  delay(2000);
-  mpu.calcOffsets(); // gyro and accelero
-  Serial.println("Done!\n");
+  while (!mpu.begin(MPU6050_SCALE_2000DPS, MPU6050_RANGE_2G))
+  {
+    Serial.println("Could not find a valid MPU6050 sensor, check wiring!");
+    delay(500);
+  }
+  mpu.calibrateGyro();
+  mpu.setThreshold(3);
 }
 
-void data_mpu6050()
+float getGyroZ()
 {
-  mpu.update();
-  if ((millis() - timer) > 10)  // print data every 10ms
-  {
-    // Serial.print("X : ");
-    // Serial.print(mpu.getAngleX());
-    // Serial.print(" Y : ");
-    // Serial.print(mpu.getAngleY());
-    z = mpu.getAngleZ();
-    Serial.print(" Z : ");
-    Serial.print(z);
-    timer = millis();
-  }
+  float yaw = 0.0;
+  Vector norm = mpu.readNormalizeGyro();
+  yaw = yaw + norm.ZAxis * timeStep;
+  Serial.println(yaw);
+  delay((timeStep * 1000) - (millis() - timer));
+  return yaw;
 }

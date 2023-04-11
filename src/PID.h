@@ -11,8 +11,8 @@ int pwmA;
 int pwmB;
 int pwmKa;
 int pwmKi;
-int Upper   = 150;
-int Lower   = 20;
+int Upper = 150;
+int Lower = 20;
 int basePWM = 50;
 
 int kp = 50;
@@ -20,6 +20,7 @@ int ki = 0;
 int kd = 0;
 
 float sp = 0.0;
+float z = 0.0;
 float dt = 0.001;
 float error, integralE, derivativeE, lastError;
 float PID;
@@ -86,11 +87,11 @@ void pid()
     digitalWrite(M2A, HIGH);
     digitalWrite(M2B, LOW);
 
-    error       = sp - z;
-    integralE   = integralE + error;
+    error = sp - z;
+    integralE = integralE + error;
     derivativeE = error - lastError;
 
-    float P =  kp * error;
+    float P = kp * error;
     float I = (ki * integralE) * dt;
     float D = (kd / dt) * derivativeE;
 
