@@ -1,28 +1,28 @@
 #include <Arduino.h>
-//#include "motor.h"
+// #include "motor.h"
 #include "compas.h"
 #include "ultrasonik.h"
 #include "PID.h"
+#include "bluetooth.h"
 
-char data = 0;
+long previousMillis = 0;
 
 void setup()
 {
   Serial.begin(9600);
-  Serial.println("START");
-  mpu6050_innit();
-  motor_innit();
+  // Serial.println("START");
+  // mpu6050_innit();
+  // motor_innit();
+  bluetooth_innit();
 }
 
 void loop()
 {
-  // if(Serial.available() > 0 )
+  // if (millis() - previousMillis > 1000)
   // {
-  //   data = Serial.read();      //Read the incoming data and store it into variable
+  //   sendToApp("1");
+  //   previousMillis = millis();
   // }
-  data_mpu6050();
-  pid();
-  // read_ultrasonik();
-  // tes_motor();
-  // delay(100);
+
+  bluetooth.println("12");
 }
