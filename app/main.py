@@ -59,7 +59,7 @@ class App(tk.Tk):
         
         self.fig, self.ax = plt.subplots()
         self.plot_graph = FigureCanvasTkAgg(self.fig, self.GraphFrame)
-        self.plot_graph.get_tk_widget().grid(column=0, row=0, sticky="ns")
+        self.plot_graph.get_tk_widget().grid(column=0, row=0, sticky="nsew")
         
         self.mainTitle()
         self.portTitle()
@@ -154,21 +154,28 @@ class App(tk.Tk):
     def choosen_port(self):
         try:
             print(f"port : {self.port_value.get()}, baudrate : {self.baudrate_value.get()}")
-            self.serial_arduino = serial.Serial(self.port_value.get(), baudrate=self.baudrate_value.get(), timeout=0)
+            self.connect_arduino = threading.Thread(target=self.connectToArduino)
+            self.connect_arduino.setDaemon(True)
+            self.connect_arduino.start()
             self.kp.configure(state='normal')
             self.kd.configure(state='normal')
             self.ki.configure(state='normal')
             self.parameter_button.configure(state='normal', bg='#00ff00')
-            self.start_button.configure(state='normal', bg='#00ff00')
-            self.pause_button.configure(state='normal', bg='yellow')
-            self.clear_button.configure(state='normal', bg='red', fg='white')
-                
+                       
         except:
             tk.messagebox.showerror(
                 title="Device not Connected", 
                 message="yang bener milih portnya blok!"
                 )
 
+    def connectToArduino(self):
+        try:
+            self.serial_arduino = serial.Serial(self.port_value.get(), baudrate=self.baudrate_value.get(), timeout=0)
+        except:
+            tk.messagebox.showerror(
+                title="Ggal konek", 
+                message="yang bener milih portnya blok!"
+                )
 
     def pidTitle(self):
         self.pid_title = tk.Label(
@@ -232,13 +239,16 @@ class App(tk.Tk):
             row=7, column=0, columnspan=3,  sticky="nsew", pady=3, padx=(5, 1))
     
     def sendPID(self, *args):
+        self.parameter_button.configure(state='disabled', bg='red')
+        self.start_button.configure(state='normal', bg='#00ff00')
+        self.pause_button.configure(state='normal', bg='yellow')
+        self.clear_button.configure(state='normal', bg='red', fg='white')
         self.choosen_kd=self.kd.get()
         self.choosen_ki=self.ki.get()
         self.choosen_kp=self.kp.get()
         self.serial_arduino.flushInput() 
-        threading.Thread(target = self.arduinoWrite, args=["kontol"]).start()
-        # self.serial_arduino.write(f"{self.kp.get()},{self.ki.get()},{self.kd.get()}".encode('utf-8'))
-
+        self.send_pid = threading.Thread(target = self.arduinoWrite, args=[f"{self.choosen_kp},{self.choosen_ki},{self.choosen_kd}"])
+        self.send_pid.start()
 
     def arduinoWrite(self, text):
         self.serial_arduino.write(text.encode('utf-8'))
@@ -249,7 +259,6 @@ class App(tk.Tk):
         self.ax.yaxis.set_major_locator(MaxNLocator(prune='lower'))
         self.ax.set_title("PID graph")
         self.plot_graph.draw()
-
 
     def startButton(self):
         self.start_button = tk.Button(
@@ -300,7 +309,7 @@ class App(tk.Tk):
             relief="groove",
             highlightbackground="black",
             activebackground='red',
-            command=self.donwloadedData,
+            command=self.threadDonwloadedData,
             bg='#00ff00'
         )
         self.download_button.grid(
@@ -309,14 +318,23 @@ class App(tk.Tk):
     def donwloadedData(self):
         temp = pd.DataFrame(self.df)
         temp.to_excel("data.xlsx", index=False)
+    
+    def threadDonwloadedData(self):
+        self.download_data = threading.Thread(target=self.donwloadedData)
+        self.download_data.setDaemon(True)
+        self.download_data.start()
 
     def startMeasure(self):
         self.isRead = True
-        threading.Thread(target=self.readSerial).start()
+        self.start_measure = threading.Thread(target=self.readSerial)
+        self.start_measure.setDaemon(True)
+        self.start_measure.start()
     
     def stopMeasure(self):
         self.isRead = False
-        threading.Thread(target=self.readSerial).start()
+        self.stop_measure = threading.Thread(target=self.readSerial)
+        self.stop_measure.setDaemon(True)
+        self.stop_measure.start()
 
     def clearMeasure(self):
         self.count = 0
@@ -328,6 +346,7 @@ class App(tk.Tk):
     def readSerial(self):
         while self.isRead:
             if self.serial_arduino.isOpen():
+                self.serial_arduino.flushInput()
                 val = self.serial_arduino.readline()
                 while not '\\n' in str(val):
                     time.sleep(.001)
@@ -336,8 +355,8 @@ class App(tk.Tk):
                         val = (val.decode()+temp.decode()).encode()
                 val = val.decode().rstrip().split(',')
                 if ((len(val[0]) != 0) and (len(val) != 0)):
-                    self.count += 1
                     print(val)
+                    self.count += 1
                     self.df["gyroZ"].append(float(val[0]))
                     self.df["N"].append(self.count)
                     self.plot()
