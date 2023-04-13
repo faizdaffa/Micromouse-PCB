@@ -15,9 +15,6 @@ int Upper = 150;
 int Lower = 20;
 int basePWM = 50;
 
-int kp = 50;
-int ki = 0;
-int kd = 0;
 
 float sp = 0.0;
 float z = 0.0;
@@ -80,48 +77,60 @@ void stop()
     analogWrite(M2E, 0);
 }
 
-void pid()
+void pid(float yaw, float kp, float ki, float kd, uint16_t TIME_INTERVAL, uint16_t N_DATA)
 {
-    digitalWrite(M1A, HIGH);
-    digitalWrite(M1B, LOW);
-    digitalWrite(M2A, HIGH);
-    digitalWrite(M2B, LOW);
-
-    error = sp - z;
-    integralE = integralE + error;
-    derivativeE = error - lastError;
-
-    float P = kp * error;
-    float I = (ki * integralE) * dt;
-    float D = (kd / dt) * derivativeE;
-
-    lastError = error;
-
-    PID = P + I + D;
-
-    pwmA = basePWM + PID;
-    if (pwmA > Upper)
+    uint16_t count = 0;
+    uint32_t previousMillis;
+    while (count <= N_DATA)
     {
-        pwmA = Upper;
-    }
-    if (pwmA < Lower)
-    {
-        pwmA = Lower;
-    }
-    pwmKa = pwmA;
+        if (millis() - previousMillis > TIME_INTERVAL)
+        {
 
-    pwmB = basePWM - PID;
-    if (pwmB > Upper)
-    {
-        pwmB = Upper;
-    }
-    if (pwmB < Lower)
-    {
-        pwmB = Lower;
-    }
-    pwmKi = pwmB;
+            digitalWrite(M1A, HIGH);
+            digitalWrite(M1B, LOW);
+            digitalWrite(M2A, HIGH);
+            digitalWrite(M2B, LOW);
 
-    analogWrite(M1E, pwmKa);
-    analogWrite(M2E, pwmKi);
-    Serial.println(" " + String(sp));
+            error = sp - yaw;
+            integralE = integralE + error;
+            derivativeE = error - lastError;
+
+            float P = kp * error;
+            float I = (ki * integralE) * dt;
+            float D = (kd / dt) * derivativeE;
+
+            lastError = error;
+
+            PID = P + I + D;
+
+            pwmA = basePWM - PID;
+            if (pwmA > Upper)
+            {
+                pwmA = Upper;
+            }
+            if (pwmA < Lower)
+            {
+                pwmA = Lower;
+            }
+            pwmKa = pwmA;
+
+            pwmB = basePWM + PID;
+            if (pwmB > Upper)
+            {
+                pwmB = Upper;
+            }
+            if (pwmB < Lower)
+            {
+                pwmB = Lower;
+            }
+            pwmKi = pwmB;
+
+            analogWrite(M1E, pwmKa);
+            analogWrite(M2E, pwmKi);
+
+            Serial.println("count : " + String(count));
+            previousMillis = millis();
+            count += 1;
+        }
+    }
 }

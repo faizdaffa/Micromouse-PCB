@@ -6,11 +6,11 @@ void bluetooth_innit()
   bluetooth.begin(9600);
 }
 
-void sendToApp(String text)
+void readFromApp()
 {
-    if (bluetooth.available())
-    {
-        String command = bluetooth.readString();
-        Serial.println(command);
-    }
+  if (bluetooth.available())
+  {
+    String command = bluetooth.readString();
+    Serial.println(command);
+  }
 }

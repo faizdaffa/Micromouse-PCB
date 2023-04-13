@@ -80,53 +80,69 @@ void stop()
 }
 void tes_motor()
 {
-    maju();   delay(1000);
-    stop();   delay(1000);
-    mundur(); delay(1000);
-    stop();   delay(1000);
+    maju();
+    delay(1000);
+    stop();
+    delay(1000);
+    mundur();
+    delay(1000);
+    stop();
+    delay(1000);
 }
-void pid(float yaw)
+
+void pid(float yaw, float kp, float ki, float kd, uint16_t TIME_INTERVAL, uint16_t N_DATA)
 {
-    digitalWrite(M1A, HIGH);
-    digitalWrite(M1B, LOW);
-    digitalWrite(M2A, HIGH);
-    digitalWrite(M2B, LOW);
-
-    error = sp - yaw;
-    integralE = integralE + error;
-    derivativeE = error - lastError;
-
-    float P = kp * error;
-    float I = (ki * integralE) * dt;
-    float D = (kd / dt) * derivativeE;
-
-    lastError = error;
-
-    PID = P + I + D;
-
-    pwmA = basePWM - PID;
-    if (pwmA > Upper)
+    uint16_T count = 0;
+    uint32_t previousMillis;
+    while (count <= N_DATA)
     {
-        pwmA = Upper;
-    }
-    if (pwmA < Lower)
-    {
-        pwmA = Lower;
-    }
-    pwmKa = pwmA;
+        if (millis() - previousMillis > TIME_INTERVAL)
+        {
 
-    pwmB = basePWM + PID;
-    if (pwmB > Upper)
-    {
-        pwmB = Upper;
-    }
-    if (pwmB < Lower)
-    {
-        pwmB = Lower;
-    }
-    pwmKi = pwmB;
+            digitalWrite(M1A, HIGH);
+            digitalWrite(M1B, LOW);
+            digitalWrite(M2A, HIGH);
+            digitalWrite(M2B, LOW);
 
-    analogWrite(M1E, pwmKa);
-    analogWrite(M2E, pwmKi);
-    
+            error = sp - yaw;
+            integralE = integralE + error;
+            derivativeE = error - lastError;
+
+            float P = kp * error;
+            float I = (ki * integralE) * dt;
+            float D = (kd / dt) * derivativeE;
+
+            lastError = error;
+
+            PID = P + I + D;
+
+            pwmA = basePWM - PID;
+            if (pwmA > Upper)
+            {
+                pwmA = Upper;
+            }
+            if (pwmA < Lower)
+            {
+                pwmA = Lower;
+            }
+            pwmKa = pwmA;
+
+            pwmB = basePWM + PID;
+            if (pwmB > Upper)
+            {
+                pwmB = Upper;
+            }
+            if (pwmB < Lower)
+            {
+                pwmB = Lower;
+            }
+            pwmKi = pwmB;
+
+            analogWrite(M1E, pwmKa);
+            analogWrite(M2E, pwmKi);
+
+            previousMillis = millis();
+        }
+        count += 1;
+    }
 }

@@ -8,11 +8,14 @@ void bluetooth_innit()
     // Serial.println("Bluetooth is able to use");
 }
 
-void sendToApp(String text)
-{
-    if (bluetooth.available())
-    {
-        String command = bluetooth.readString();
-        Serial.println(command);
-    }
-}
+// char *handshake()
+// {
+//     char command[] = "";
+//     if (bluetooth.available())
+//     {
+//         // String command = bluetooth.readString();
+//         command = "RECEIVED";
+//         return command;
+//     }
+//     return command;
+// }

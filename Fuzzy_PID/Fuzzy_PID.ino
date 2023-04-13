@@ -2,7 +2,6 @@
 #include "pid.h"
 #include "ultrasonik.h"
 
-
 char data = 0;
 
 void setup()
@@ -20,6 +19,7 @@ void loop()
   Serial.println(yaw);
   bluetooth.println(String(yaw));
   pid(yaw);
+  readFromApp();
   // read_ultrasonik();
   // tes_motor();
   // delay(100);
