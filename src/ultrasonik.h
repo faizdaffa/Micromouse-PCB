@@ -10,16 +10,17 @@
 #define MAX      400
 #define SONAR_NUM  3
 
-NewPing sonar[SONAR_NUM] = {
+NewPing sonar[SONAR_NUM] = 
+{
     // Sensor object array.
     NewPing(TRIGGER_1, ECHO_1, MAX), // Each sensor's trigger pin, echo pin, and max distance to ping.
     NewPing(TRIGGER_2, ECHO_2, MAX),
     NewPing(TRIGGER_3, ECHO_3, MAX)
 };
 
-int kiri = 0;
-int depan = 0;
-int kanan = 0;
+float kiri  = 0;
+float depan = 0;
+float kanan = 0;
 
 void read_ultrasonik()
 {
@@ -29,10 +30,10 @@ void read_ultrasonik()
     depan = sonar[1].ping_cm(); // Send ping, get ping time in microseconds (uS).
     kanan = sonar[2].ping_cm(); // Send ping, get ping time in microseconds (uS).
 
-    Serial.print("Kiri: ");
-    Serial.print(kiri);
-    Serial.print("    Depan: ");
-    Serial.print(depan);
-    Serial.print("    Kanan: ");
-    Serial.println(kanan);
+    // Serial.print("Kiri: ");
+    // Serial.print(kiri);
+    // Serial.print("    Depan: ");
+    // Serial.print(depan);
+    // Serial.print("    Kanan: ");
+    // Serial.println(kanan);
 }
