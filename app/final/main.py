@@ -2,6 +2,7 @@ import tkinter as tk
 from table import *
 from plotting import *
 from connection import *
+from data import *
 from tkinter import ttk, filedialog, messagebox
 import sys
 
@@ -9,10 +10,10 @@ import sys
 class App(tk.Tk):
     def __init__(self, *args, **kwargs):
         tk.Tk.__init__(self, *args, **kwargs)
-        self.title("PID Plotter - UPN Veteran Jakarta")
+        self.title("Modbus Potter - UPN Veteran Jakarta")
         self.state('zoomed')
-        self.columnconfigure(0, weight=1)
-        self.columnconfigure(1, weight=19)
+        self.columnconfigure(0, weight=2)
+        self.columnconfigure(1, weight=18)
         self.rowconfigure(0, weight=8)
         self.rowconfigure(1, weight=1)
         self.protocol("WM_DELETE_WINDOW", self.closeWindow)
@@ -36,15 +37,20 @@ class App(tk.Tk):
     def create_child_frames(self):
         self.connection_frame = connectionFrame(self, self.data)
         self.graph_frame = graphFrame(self)
+        self.data_frame = dataFrame(self, self.data)
         self.table_frame = tableFrame(self)
 
         # Assign grid positions to the child frames
         self.connection_frame.grid(
             row=0, column=0, sticky="nsew", padx=(10, 10), pady=(10, 10))
-        self.table_frame.grid(
-            row=1, column=0, columnspan=2, sticky="nsew", padx=(10, 10), pady=(10, 10))
+        self.data_frame.grid(row=0, column=1, sticky="nsew",
+                             padx=(10, 10), pady=(10, 10))
+
+        self.table_frame.grid(row=1, column=0, columnspan=3,
+                              sticky="nsew", padx=(10, 10), pady=(10, 10))
+
         self.graph_frame.grid(
-            row=0, column=1, sticky="nsew", padx=(10, 10), pady=(10, 10))
+            row=0, column=2, sticky="nsew", padx=(10, 10), pady=(10, 10))
 
     def save_file(self):
         file_path = filedialog.asksaveasfilename(
@@ -56,14 +62,11 @@ class App(tk.Tk):
                     "File Saved", "Data frame saved successfully!")
 
     def closeWindow(self):
-        self.connection_frame.connected_status = False
-        self.connection_frame.measure_status = False
-        self.connection_frame.serials.close()
         if messagebox.askyesnocancel("Quit?", "Do you sure you want to quit?"):
             self.quit()
             self.destroy()
             sys.exit()
-
+    
     def check_same_items(self, lst):
         if len(lst) < 2:  # If the list has less than 2 items, all items are the same
             return True
@@ -76,17 +79,36 @@ class App(tk.Tk):
         return True
 
     def get_data(self):
-        if ((self.connection_frame.connected_status) and (self.connection_frame.measure_status)):
-            try:
-                temp = self.connection_frame.serials.readline().decode().rstrip()
-                val = [i for i in temp.split(",")]
-                if len(val) > 2:
-                    self.table_frame.insert_data(data=val)
-                    # self.graph_frame.update_graph(val)
-            except:
-                pass
+        if self.connection_frame.connected_status:
+            result = self.connection_frame.client.read_holding_registers(
+                address=0x0,
+                count=0x20,
+                unit=0x1
+            )
+            datas = result.registers
+            checked_data = ["-"] * 32
+            for i in range(16):
+                if self.data_frame.checkbox_value_16[i].get() == 0:
+                    pass
+                else:
+                    checked_data[i] = datas[i]/10
+                    print(f"checked data : {checked_data[i]}")
+                    self.data_frame.data_labels[i][0].config(
+                        text=datas[i]/10)
 
-        self.after(1, self.get_data)
+                # Unchecked
+                if self.data_frame.checkbox_value_32[i].get() == 0:
+                    pass
+                else:
+                    self.data_frame.data_labels[i][1].config(
+                        text=datas[i+16]/10
+                    )
+                    checked_data[i+16] = datas[i+16]/10
+            
+            if not self.check_same_items(checked_data):
+                self.table_frame.insert_data(data=checked_data)
+                self.graph_frame.update_graph(checked_data)
+        self.after(1000, self.get_data)
 
 
 if __name__ == "__main__":
