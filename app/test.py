@@ -9,13 +9,15 @@ parser = argparse.ArgumentParser(description='Script to handle boolean and list 
 
 # Add the boolean argument
 parser.add_argument('-pid', '--list', nargs='+', type=float, required=True)
+parser.add_argument('-com', '--com',  type=str, required=True)
 #parser.add_argument('-send', '--status', type=str, required=True)
 args = parser.parse_args()
 
 pid_values = args.list
+port_values = args.com
 #spid_status = args.statusss
 
-serial_port = 'COM6' 
+serial_port = port_values
 baud_rate = 9600
 timeout = 5
 
