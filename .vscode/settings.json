@@ -1,5 +1,6 @@
 {
     "files.associations": {
         "softwareserial.h": "c"
-    }
+    },
+    "cmake.configureOnOpen": false
 }

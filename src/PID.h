@@ -15,7 +15,6 @@ int Upper = 150;
 int Lower = 20;
 int basePWM = 50;
 
-
 float sp = 0.0;
 float z = 0.0;
 float dt = 0.001;
@@ -77,15 +76,15 @@ void stop()
     analogWrite(M2E, 0);
 }
 
-void pid(float yaw, float kp, float ki, float kd, uint16_t TIME_INTERVAL, uint16_t N_DATA)
+void pid(uint16_t tab, uint16_t select, float yaw, float kp, float ki, float kd, String operation_status, float size_number, String Swipe_TAB, String START, uint16_t TIME_INTERVAL, uint16_t TIME_PID)
 {
-    uint16_t count = 0;
+
     uint32_t previousMillis;
-    while (count <= N_DATA)
-    {
+    while(millis() < TIME_PID){
+
         if (millis() - previousMillis > TIME_INTERVAL)
         {
-
+                                 
             digitalWrite(M1A, HIGH);
             digitalWrite(M1B, LOW);
             digitalWrite(M2A, HIGH);
@@ -128,9 +127,9 @@ void pid(float yaw, float kp, float ki, float kd, uint16_t TIME_INTERVAL, uint16
             analogWrite(M1E, pwmKa);
             analogWrite(M2E, pwmKi);
 
-            Serial.println("count : " + String(count));
+            //display_selector(tab, select, yaw, kp, ki, kd, operation_status, size_number, Swipe_TAB, START);
+
             previousMillis = millis();
-            count += 1;
         }
     }
 }

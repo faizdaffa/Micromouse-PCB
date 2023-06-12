@@ -28,7 +28,7 @@ class connectionFrame(tk.Frame):
                          font=("Arial", 20,  "bold"))
         label.grid(row=0, column=0, columnspan=2, sticky="ew")
         self.image = Image.open('logo.png')
-        basewidth = 250
+        basewidth = 100
         wpercent = (basewidth/float(self.image.size[0]))
         hsize = int((float(self.image.size[1])*float(wpercent)))
         self.image = self.image.resize(

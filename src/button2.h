@@ -7,10 +7,44 @@ const int buttonPins[] = {A2, A3};
 uint32_t previousMillis[noOfButtons];
 uint8_t pressCount[noOfButtons];
 uint8_t counter[noOfButtons]; //2 nilai, 
+
+uint8_t tab = 0;
+int control[4] = {0, 0, 0, 0}; // tab, size, operation
 float size[6] = {0.1, 0.5,  1, 5, 10, 100};
 String operation[2] = {"+", "-"};
-String pid_status[2] = {"PID", "..."};
-int select_size = 0;
+String mulai[2] = {"OP", "GO!"};
+
+
+int select_tab()
+{
+    long currentMillis = millis();
+
+    // If select tab not pressed
+    if (digitalRead(buttonPins[1]))
+    {
+        previousMillis[1] = currentMillis;
+        pressCount[1] = 0;
+    }
+    // If select tab pressed
+    else
+    {
+        if (currentMillis - previousMillis[1] > bounceDelay)
+        {
+            previousMillis[1] = currentMillis;
+            ++pressCount[1];
+            if (pressCount[1] == minButtonPress)
+            {
+                control[0]++; 
+            }
+        }
+    }
+    if (control[0] > 1)
+    {
+        control[0] = 0;
+     }
+    
+    return control[0];
+}
 
 int select_channel()
 {
@@ -35,7 +69,7 @@ int select_channel()
             }
         }
     }
-    if (counter[0] > 6)
+    if (counter[0] > 5)
     {
         counter[0] = 1;
     }
@@ -55,12 +89,11 @@ float control_value(float val, float size, String operation_status)
     {
         previousMillis[1] = currentMillis;
         pressCount[1] = 0;
-        Serial.println(digitalRead(buttonPins[1]));
     }
     // If plus button pressed
     else
     {
-        Serial.println(digitalRead(buttonPins[1]));
+        //Serial.println(digitalRead(buttonPins[1]));
         if (currentMillis - previousMillis[1] > bounceDelay)
         {
             previousMillis[1] = currentMillis; // Set previousMillis to millis to reset timeout
@@ -102,20 +135,20 @@ float change_size()
             if (pressCount[1] == minButtonPress)
             // add size
             {
-                select_size = select_size + 1;
+                control[1] = control[1] + 1;
             }
         }
     }
 
-    if (select_size > 6)
+    if (control[1] > 6)
     {
-        select_size = 0;
+        control[1] = 0;
     }
-    else if (select_size < 0)
+    else if (control[1] < 0)
     {
-        select_size = 0;
+        control[1] = 0;
     }
-    return size[select_size];
+    return size[control[1]];
 }
 
 String changeOperation()
@@ -136,22 +169,22 @@ String changeOperation()
             if (pressCount[1] == minButtonPress)
             // add size
             {
-                select_size = select_size + 1;
+                control[2] = control[2] + 1;
             }
         }
     }
-    if (select_size > 1)
+    if (control[2] > 1)
     {
-        select_size = 0;
+        control[2] = 0;
     }
-    else if (select_size < 0)
+    else if (control[2] < 0)
     {
-        select_size = 0;
+        control[2] = 0;
     }
-    return operation[select_size];
+    return operation[control[2]];
 }
 
-String doPID()
+/*String move_tab()
 {
     long currentMillis = millis();
     if (digitalRead(buttonPins[1]))
@@ -169,17 +202,17 @@ String doPID()
             if (pressCount[1] == minButtonPress)
             // add size
             {
-                select_size = select_size + 1;
+                control[3] = control[3] + 1;
             }
         }
     }
-    if (select_size > 1)
+    if (control[3] > 1)
     {
-        select_size = 0;
+        control[3] = 0;
     }
-    else if (select_size < 0)
+    else if (control[3] < 0)
     {
-        select_size = 0;
+        control[3] = 0;
     }
-    return pid_status[select_size];
-}
+    return tab_symbol[control[3]];
+}*/
