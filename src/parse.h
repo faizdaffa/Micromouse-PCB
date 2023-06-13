@@ -35,7 +35,7 @@ float *parse_data(float values[], int arraySize)
         Serial.println("Values:");
         index = 0;
         printArray(values, arraySize);
-        memset(values, 0, sizeof(float) * arraySize);
+        //memset(values, 0, sizeof(float) * arraySize);
     }
 
     return values;

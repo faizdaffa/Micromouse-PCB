@@ -2,7 +2,6 @@
 #include "parse.h"
 #include "PID.h"
 
-
 const int length_sendData = 300;
 const int length_receiveData = 3;
 float receive_data[length_receiveData]; // kp 0 ki 1 kd 2 
@@ -22,20 +21,16 @@ void loop()
     parse_data(receive_data, length_receiveData);
 
     Serial.println("Start PID");
-    pid(receive_data[0], receive_data[1], receive_data[2], 10, 10000);
+    pid(receive_data, 10, 10000);
     Serial.println("Finished PID");
-  
-
     data_ready = true;
     if (data_ready)
     {
-
       for (size_t i = 0; i < count; i++)
       {
         Serial.println(yaw[i]);
         bluetooth.println(yaw[i]);
       }
-
       data_ready = false;
     }
   }

@@ -9,6 +9,7 @@
 MPU6050 mpu;
 float timeStep = 0.01;
 unsigned long timer = 0;
+float dataYaw = 55;
 
 void mpu6050_innit()
 {
@@ -22,12 +23,11 @@ void mpu6050_innit()
   mpu.setThreshold(3);
 }
 
-float getGyroZ()
-{
-  float yaw = 0.0;
-  Vector norm = mpu.readNormalizeGyro();
-  yaw = yaw + norm.ZAxis * timeStep;
-  Serial.println(yaw);
-  delay((timeStep * 1000) - (millis() - timer));
-  return yaw;
-}
+//float getGyroZ()
+// {
+//   Vector norm = mpu.readNormalizeGyro();
+//   dataYaw = dataYaw + norm.ZAxis * timeStep;
+//   Serial.println(dataYaw);
+//   delay((timeStep * 1000) - (millis() - timer));
+//   return dataYaw;
+// }

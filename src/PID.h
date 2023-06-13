@@ -1,4 +1,5 @@
 #include <Arduino.h>
+#include "compas.h"
 
 #define M1A A0
 #define M1B A1
@@ -20,6 +21,8 @@ float z = 0.0;
 float dt = 0.001;
 float error, integralE, derivativeE, lastError;
 float PID;
+float yaw[200];
+int count = 0;
 
 void motor_innit()
 {
@@ -66,7 +69,7 @@ void putar_kanan()
     digitalWrite(M2B, LOW);
     analogWrite(M2E, basePWM);
 }
-void stop()
+void motor_stop()
 {
     digitalWrite(M1A, LOW);
     digitalWrite(M1B, LOW);
@@ -76,27 +79,27 @@ void stop()
     analogWrite(M2E, 0);
 }
 
-void pid(uint16_t tab, uint16_t select, float yaw, float kp, float ki, float kd, String operation_status, float size_number, String Swipe_TAB, String START, uint16_t TIME_INTERVAL, uint16_t TIME_PID)
+void pid(float PID_parameter[], uint16_t TIME_INTERVAL, uint16_t TIME_PID)
 {
-
     uint32_t previousMillis;
     while(millis() < TIME_PID){
 
         if (millis() - previousMillis > TIME_INTERVAL)
         {
-                                 
+            //getGyroZ();
             digitalWrite(M1A, HIGH);
             digitalWrite(M1B, LOW);
             digitalWrite(M2A, HIGH);
             digitalWrite(M2B, LOW);
-
-            error = sp - yaw;
+            yaw[count] = dataYaw;
+            count += 1;
+            error = sp - dataYaw;
             integralE = integralE + error;
             derivativeE = error - lastError;
 
-            float P = kp * error;
-            float I = (ki * integralE) * dt;
-            float D = (kd / dt) * derivativeE;
+            float P = PID_parameter[0] * error;
+            float I = (PID_parameter[1] * integralE) * dt;
+            float D = (PID_parameter[2] / dt) * derivativeE;
 
             lastError = error;
 
@@ -126,8 +129,6 @@ void pid(uint16_t tab, uint16_t select, float yaw, float kp, float ki, float kd,
 
             analogWrite(M1E, pwmKa);
             analogWrite(M2E, pwmKi);
-
-            //display_selector(tab, select, yaw, kp, ki, kd, operation_status, size_number, Swipe_TAB, START);
 
             previousMillis = millis();
         }

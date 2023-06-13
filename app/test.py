@@ -52,7 +52,7 @@ def receive_data(ser):
 
 
 if __name__ == '__main__':
-    ser = serial.Serial(serial_port, baud_rate, timeout=timeout)
+    ser = serial.Serial(serial_port, baud_rate, timeout=10)
     send_thread = threading.Thread(target=send_data, args=(ser, data_string,))
     receive_thread = threading.Thread(target=receive_data, args=(ser,))
     try:
